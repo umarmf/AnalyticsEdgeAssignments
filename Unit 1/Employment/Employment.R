@@ -1,0 +1,37 @@
+library(dplyr)
+str(cps)
+sort(table(cps$Region))
+prop.table(table(cps$Citizenship))
+cps %>% subset(Hispanic = 1, select = Race) %>% table()
+# get variables with NAs using summary
+summary(cps)
+table(cps$Region, is.na(cps$Married)) %>% plot()
+table(cps$Sex, is.na(cps$Married)) %>% plot()
+table(cps$Age, is.na(cps$Married))
+table(cps$Citizenship, is.na(cps$Married))
+table(cps$Region, is.na(cps$MetroAreaCode)) %>% prop.table()
+tapply(is.na(cps$MetroAreaCode), cps$Region,mean)
+metroarea <- read.csv("MetroAreaCodes.csv")
+country <- read.csv("CountryCodes.csv")
+str(area)
+str(country)
+cps2 <- merge(cps,metroarea,by.x = "MetroAreaCode",by.y="Code",all.x=TRUE)
+summary(cps2)
+which.max(cps2)
+cps2$MetroArea %>% table() %>% which.max()
+# the mean of Hispanic divided by Metro Area
+tapply(cps2$Hispanic,cps2$MetroArea,mean) %>% sort()
+# to get number of metro areas where 20% race is asian
+# convert Race into TRUE/FALSE variable, divide by Metro Area, take mean
+tapply(cps2$Race == "Asian", cps2$MetroArea,mean) %>% sort()
+sort(tapply(cps2$Education == "No high school diploma", cps2$MetroArea, mean, na.rm = TRUE),TRUE)
+cps3 <- left_join(cps2,country,by = c("CountryOfBirthCode" = "Code"))
+str(cps3)
+summary(cps3)
+# % of "New York-Northern New Jersey-Long Island, NY-NJ-PA" interviewees not born in US
+checkarea <- filter(cps3, MetroArea == "New York-Northern New Jersey-Long Island, NY-NJ-PA")
+(checkarea$Country != "United States") %>% mean(na.rm=TRUE)
+# metro area with largest number of Indian, Brazilian, Somalian birth
+tapply(cps3$Country=="India",cps3$MetroArea,sum,na.rm=TRUE) %>% which.max()
+tapply(cps3$Country=="Brazil",cps3$MetroArea,sum,na.rm=TRUE) %>% which.max()
+tapply(cps3$Country=="Somalia",cps3$MetroArea,sum,na.rm=TRUE) %>% which.max()
