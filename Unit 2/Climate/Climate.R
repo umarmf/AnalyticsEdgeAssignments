@@ -11,4 +11,11 @@ library(corrplot)
 corrplot(cor(climate_train), type = "upper", order = "hclust",
 tl.col = "black", tl.srt = 45)
 cor(climate_train)
-
+model2 <- lm(Temp~MEI+N2O+TSI+Aerosols,data=climate_train)
+summary(model2)
+model3 <- step(model1)
+summary(model3)
+testpredictions <- predict(model3,newdata=climate_test)
+sse <- sum((climate_test$Temp-testpredictions)^2)
+sst <- sum((climate_test$Temp - mean(climate_train$Temp))^2)
+r2 <- 1 - (sse/sst)           
