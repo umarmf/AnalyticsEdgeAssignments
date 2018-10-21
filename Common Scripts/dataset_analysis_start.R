@@ -1,3 +1,4 @@
+head(dataset)
 str(dataset)
 summary(dataset)
 prop.table(table(dataset$score,dataset$bygroup))
